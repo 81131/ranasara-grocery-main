@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 
 function ChatBot() {
   const [messages, setMessages] = useState([]);
@@ -36,9 +35,21 @@ function ChatBot() {
   }, []);
 
   const fetchMessages = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
     try {
-      const res = await axios.get("http://localhost:8000/chat/");
-      setMessages(res.data);
+      const res = await fetch('http://localhost:8000/chat/history', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Load messages from the most recent session
+        if (data && data.length > 0) {
+          const latestSession = data[0];
+          setMessages(latestSession.messages);
+        }
+      }
     } catch (error) {
       console.error("Error loading messages:", error);
     }
@@ -48,17 +59,25 @@ function ChatBot() {
     if (!input.trim()) return;
 
     const currentInput = input;
+    const token = localStorage.getItem('token');
     setInput(""); 
 
     const tempId = `temp-${Date.now()}`;
-    setMessages((prev) => [...prev, { id: tempId, role: "user", content: currentInput }]);
+    setMessages((prev) => [...prev, { id: tempId, role: "user", content: currentInput, timestamp: new Date().toISOString() }]);
     setIsTyping(true); 
 
     try {
-      await axios.post("http://localhost:8000/chat/send", {
-        content: currentInput
+      const res = await fetch("http://localhost:8000/chat/send", {
+        method: "POST",
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ content: currentInput })
       });
-      await fetchMessages();
+      if (res.ok) {
+        await fetchMessages();
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages((prev) => prev.filter(msg => msg.id !== tempId));
@@ -68,9 +87,15 @@ function ChatBot() {
   };
 
   const deleteMessage = async (id) => {
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:8000/chat/${id}`);
-      await fetchMessages();
+      const res = await fetch(`http://localhost:8000/chat/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        await fetchMessages();
+      }
     } catch (error) {
       console.error("Error deleting message:", error);
     }
@@ -78,16 +103,23 @@ function ChatBot() {
 
   const submitEdit = async (id) => {
     if (!editContent.trim()) return;
-    
+    const token = localStorage.getItem('token');
     setIsTyping(true);
     
     try {
-      await axios.put(`http://localhost:8000/chat/${id}`, {
-        content: editContent
+      const res = await fetch(`http://localhost:8000/chat/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ content: editContent })
       });
-      await fetchMessages();
-      setEditingId(null);
-      setEditContent("");
+      if (res.ok) {
+        await fetchMessages();
+        setEditingId(null);
+        setEditContent("");
+      }
     } catch (error) {
       console.error("Error updating message:", error);
     } finally {
@@ -97,8 +129,7 @@ function ChatBot() {
 
   const formatTime = (dateString) => {
     if (!dateString) return "";
-    const utcString = dateString.endsWith('Z') ? dateString : `${dateString}Z`;
-    return new Date(utcString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   // --- UI RENDERING ---

@@ -218,6 +218,7 @@ function DriverDashboard() {
             >
               {selectedOrder && currentLocation && selectedOrder.delivery_lat && selectedOrder.status !== 'Delivered' && (
                 <DirectionsService
+                  key={`route-${selectedOrder.id}`}
                   options={{
                     destination: { lat: selectedOrder.delivery_lat, lng: selectedOrder.delivery_lng },
                     origin: currentLocation,

@@ -67,6 +67,10 @@ YOUR RULES:
 
 # --- NEW: Auto-Retry Logic Added Here ---
 def generate_ai_response(message: str) -> str:
+    # Check if we have any valid clients
+    if not valid_keys:
+        return "I apologize, but the chatbot service is currently unavailable. Please set GEMINI_API_KEY or GEMINI_API_KEYS in your environment variables."
+    
     max_retries = 3
     
     for attempt in range(max_retries):
@@ -93,5 +97,5 @@ def generate_ai_response(message: str) -> str:
                 continue # Loops back to the top and tries again
             
             # If it's a different error, or we failed 3 times, show the fallback message
-            print(f"Gemini API Error: {e}")
+            print(f"Gemini API Error (Attempt {attempt + 1}): {e}")
             return "Sorry, I am having trouble connecting to my brain right now. My brain isn't braining....."

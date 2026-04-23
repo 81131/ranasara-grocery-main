@@ -28,13 +28,14 @@ function AdminOrders() {
 
   const navigate = useNavigate();
 
-  const fetchOrders = useCallback(async (pg = page, sf = statusFilter, sBy = sortField, sDir = sortOrder) => {
+  const fetchOrders = useCallback(async (pg = page, sf = statusFilter, sBy = sortField, sDir = sortOrder, q = searchTerm) => {
     const token = localStorage.getItem('token');
     if (!token) return navigate('/login');
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: pg, page_size: PAGE_SIZE, sort_by: sBy, sort_dir: sDir });
       if (sf && sf !== 'All') params.set('status', sf);
+      if (q && q.trim()) params.set('search', q.trim());
       const res = await fetch(`http://localhost:8000/orders/?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -45,13 +46,23 @@ function AdminOrders() {
       }
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
-  }, [navigate, page, statusFilter, sortField, sortOrder]);
+  }, [navigate, page, statusFilter, sortField, sortOrder, searchTerm]);
 
-  useEffect(() => { fetchOrders(page, statusFilter, sortField, sortOrder); }, [page, statusFilter, sortField, sortOrder]);
+  useEffect(() => { fetchOrders(page, statusFilter, sortField, sortOrder, searchTerm); }, [page, statusFilter, sortField, sortOrder]);
+
+  // Debounced search: wait 400ms after user stops typing before firing the request
   useEffect(() => {
-    const interval = setInterval(() => fetchOrders(page, statusFilter), 30000);
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchOrders(1, statusFilter, sortField, sortOrder, searchTerm);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const interval = setInterval(() => fetchOrders(page, statusFilter, sortField, sortOrder, searchTerm), 30000);
     return () => clearInterval(interval);
-  }, [page, statusFilter]);
+  }, [page, statusFilter, searchTerm]);
 
   useEffect(() => { if (selectedOrder) fetchAvailableDrivers(); }, [selectedOrder]);
 
@@ -118,10 +129,7 @@ function AdminOrders() {
     );
   };
 
-  const filteredOrders = orders.filter(o =>
-    o.id.toString().includes(searchTerm) ||
-    (o.delivery_info?.customer_name || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrders = orders;  // Filtering is now server-side via the 'search' param
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

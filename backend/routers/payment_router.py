@@ -38,8 +38,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/payment", tags=["payment"])
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-PAYHERE_MERCHANT_ID = os.environ.get("VITE_PAYHERE_MERCHANT_ID", "").strip()
+# SECURITY: Use backend-only env vars, NOT frontend VITE_ vars
+PAYHERE_MERCHANT_ID = os.environ.get("PAYHERE_MERCHANT_ID", "").strip()
 PAYHERE_SECRET      = os.environ.get("PAYHERE_MERCHANT_SECRET", "").strip()
+if not PAYHERE_MERCHANT_ID or not PAYHERE_SECRET:
+    raise RuntimeError("PayHere merchant credentials not set. Set PAYHERE_MERCHANT_ID and PAYHERE_MERCHANT_SECRET in .env")
 # HMAC-SHA256 key — re-uses the JWT secret so there's no extra secret to manage
 HMAC_KEY            = os.environ.get("JWT_SECRET_KEY", "").encode()
 PAYHERE_SANDBOX     = True
@@ -229,12 +232,22 @@ async def payment_notify(request: Request, db: Session = Depends(get_db)):
         )
         return JSONResponse(status_code=400, content={"detail": "HMAC verification failed"})
 
-    # ── 3. Mark order as Processing ────────────────────────────────────────────
+    # ── 3. Mark order as Processing and deduct stock ──────────────────────────
     order.current_status = "Processing"
     order.payment_method = "PayHere (Card)"
     order.payhere_token  = None   # invalidate — token is single-use
+
+    # Deduct inventory stock now that card payment is confirmed by PayHere
+    from models.orders import OrderItem
+    from models.inventory import StockBatch
+    order_items_list = db.query(OrderItem).filter(OrderItem.order_id == order_id).all()
+    for oi in order_items_list:
+        batch = db.query(StockBatch).filter(StockBatch.id == oi.batch_id).first()
+        if batch:
+            batch.current_quantity = max(0.0, float(batch.current_quantity) - float(oi.quantity))
+
     db.commit()
-    logger.info("PayHere notify: order %s confirmed — status → Processing", order_id_str)
+    logger.info("PayHere notify: order %s confirmed — status → Processing, stock deducted", order_id_str)
     return JSONResponse(content={"detail": "OK"})
 
 

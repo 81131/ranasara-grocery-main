@@ -19,18 +19,12 @@ router = APIRouter(prefix="/users", tags=["users"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
-ALLOW_INSECURE = os.getenv("ALLOW_INSECURE_JWT", "false").lower() == "true"
 if not SECRET_KEY or len(SECRET_KEY) < 32:
-    if ALLOW_INSECURE:
-        import warnings
-        warnings.warn(
-            "JWT_SECRET_KEY is not set or too short (< 32 chars). "
-            "Using insecure fallback. NEVER use in production!",
-            stacklevel=2
-        )
-        SECRET_KEY = SECRET_KEY or "INSECURE_LOCAL_DEV_KEY_replace_me_in_dotenv!"
-    else:
-        raise RuntimeError("JWT_SECRET_KEY is not set or too short. Set a strong secret in .env, or set ALLOW_INSECURE_JWT=true for dev.")
+    raise RuntimeError(
+        "JWT_SECRET_KEY is not set or too short (< 32 chars). "
+        "Set JWT_SECRET_KEY in .env to a strong 32+ character secret key. "
+        "Example: JWT_SECRET_KEY=your-secure-random-key-here-with-32-chars-minimum"
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 hours
 
@@ -135,7 +129,9 @@ class GoogleLoginRequest(BaseModel):
 @router.post("/google-login")
 def google_login(body: GoogleLoginRequest, db: Session = Depends(get_db)):
     try:
-        client_id = os.getenv("VITE_GOOGLE_AUTH_CLIENT_ID", "772211541976-uoum4p4tedtkt90doq8ju03qv4l5bis1.apps.googleusercontent.com")
+        client_id = os.getenv("GOOGLE_AUTH_CLIENT_ID")
+        if not client_id:
+            raise HTTPException(status_code=500, detail="Google OAuth not configured. Set GOOGLE_AUTH_CLIENT_ID in .env")
         idinfo = id_token.verify_oauth2_token(body.credential, requests.Request(), client_id)
         
         email = idinfo.get("email")

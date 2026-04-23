@@ -21,7 +21,8 @@ function NavBar({ isLoggedIn, userRole, handleLogout }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (!isLoggedIn) return;
+    const fetchCount = () => {
       const token = localStorage.getItem('token');
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
       fetch(`${API_URL}/orders/notifications/unread-count`, {
@@ -30,7 +31,10 @@ function NavBar({ isLoggedIn, userRole, handleLogout }) {
       .then(r => r.ok ? r.json() : null)
       .then(data => { if (data) setUnreadCount(data.count || 0); })
       .catch(() => {});
-    }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000); // refresh every 30 s
+    return () => clearInterval(interval);
   }, [isLoggedIn]);
 
   const linkStyle = {
@@ -154,6 +158,29 @@ function NavBar({ isLoggedIn, userRole, handleLogout }) {
   );
 }
 
+function TitleUpdater() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const titleMap = {
+      '/': 'Home | Ransara Supermarket',
+      '/cart': 'Your Shopping Cart | Ransara',
+      '/orders': 'My Orders | Ransara Supermarket',
+      '/login': 'Login | Ransara Support',
+      '/register': 'Create Account | Ransara',
+      '/admin': 'Admin Control Panel | Ransara',
+      '/notifications': 'Notifications | Ransara',
+      '/feedback': 'Customer Feedback | Ransara',
+      '/dashboard': 'Customer Dashboard | Ransara',
+      '/driver': 'Driver Portal | Ransara Logistics',
+      '/chat': 'AI Support Assistant | Ransara',
+    };
+    document.title = titleMap[location.pathname] || 'Ransara Supermarket';
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'customer');
@@ -172,6 +199,7 @@ function App() {
   return (
     <ToastProvider>
       <Router>
+        <TitleUpdater />
         <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-main)' }}>
           <NavBar isLoggedIn={isLoggedIn} userRole={userRole} handleLogout={handleLogout} />
 

@@ -186,11 +186,18 @@ def upload_image(
     with open(file_path, "wb") as buffer:
         buffer.write(file.file.read())
         
-    # main.py mounts /pictures to serve these files
-    return {"image_url": f"http://localhost:8000/pictures/{file_name}"}
+    # Use BACKEND_PUBLIC_URL so image links work in Docker / production deployments
+    backend_url = os.environ.get("BACKEND_PUBLIC_URL", "http://localhost:8000").rstrip("/")
+    return {"image_url": f"{backend_url}/pictures/{file_name}"}
 
 @router.delete("/products/{product_id}")
-def delete_product(product_id: int, db: Session = Depends(get_db)):
+def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can delete products")
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")

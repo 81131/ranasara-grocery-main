@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Share2, Star, MessageSquare, Loader2 } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 function StarRating({ value }) {
   return (
@@ -21,6 +22,7 @@ function ProductDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams(); // /product/:id
+  const { addToast } = useToast();
 
   const [item, setItem] = useState(location.state || null);
   const [loadingProduct, setLoadingProduct] = useState(!location.state);
@@ -81,12 +83,12 @@ function ProductDetails() {
   const handleAddToCart = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Please log in to add items to your cart!');
+      addToast('Please log in to add items to your cart!', 'error');
       navigate('/login');
       return;
     }
     if (!item.primary_batch_id) {
-      alert('This product is out of stock or unavailable for online purchase.');
+      addToast('This product is out of stock or unavailable for online purchase.', 'error');
       return;
     }
     try {
@@ -96,13 +98,15 @@ function ProductDetails() {
         body: JSON.stringify({ batch_id: item.primary_batch_id, quantity })
       });
       if (response.ok) {
-        alert(`Added ${quantity} × ${item.product_name} to cart! 🛒`);
+        addToast(`Added ${quantity} × ${item.product_name} to cart! 🐲`, 'success');
+        setQuantity(1); // Reset quantity selector
       } else {
         const err = await response.json().catch(() => ({}));
-        alert('Could not add to cart: ' + (err.detail || 'Unknown error'));
+        addToast('Could not add to cart: ' + (err.detail || 'Unknown error'), 'error');
       }
     } catch (error) {
       console.error('Failed to add to cart:', error);
+      addToast('Network error. Please try again.', 'error');
     }
   };
 
@@ -119,7 +123,7 @@ function ProductDetails() {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Product link copied to clipboard!');
+      addToast('Product link copied to clipboard!', 'success');
     }
   };
 
@@ -182,8 +186,12 @@ function ProductDetails() {
           </p>
 
           <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '20px' }}>
-            High-quality {item.product_name} sourced from our trusted suppliers.
-            Currently, we have <strong style={{ color: 'var(--text-main)' }}>{item.available_qty} {item.unit}</strong> in stock ready for delivery or pickup.
+            {item.description || item.product_description
+              ? (item.description || item.product_description)
+              : `High-quality ${item.product_name} sourced from our trusted suppliers.`}
+            {' '}<span style={{ color: 'var(--text-light)' }}>
+              Currently, we have <strong style={{ color: 'var(--text-main)' }}>{item.available_qty} {item.unit}</strong> in stock ready for delivery or pickup.
+            </span>
           </p>
 
           {/* Keywords */}
@@ -201,7 +209,28 @@ function ProductDetails() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: 'auto', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
               <button
-                onClick={() => setQuantity(Math.min(item.available_qty || 99, quantity + 1))}
+                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                className="btn btn-secondary"
+                style={{
+                  borderRadius: 0,
+                  padding: '12px 20px',
+                  fontSize: '18px',
+                  opacity: quantity <= 1 ? 0.5 : 1,
+                  cursor: quantity <= 1 ? 'not-allowed' : 'pointer'
+                }}
+              >−</button>
+              <span style={{
+                padding: '12px 18px',
+                fontWeight: '700',
+                fontSize: '18px',
+                color: 'var(--text-main)',
+                minWidth: '48px',
+                textAlign: 'center',
+                userSelect: 'none'
+              }}>{quantity}</span>
+              <button
+                onClick={() => setQuantity(q => Math.min(item.available_qty || 99, q + 1))}
                 disabled={quantity >= item.available_qty || item.available_qty <= 0}
                 className="btn btn-secondary"
                 style={{

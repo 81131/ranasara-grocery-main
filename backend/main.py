@@ -34,12 +34,17 @@ if os.path.exists("/app/payment_slips"):
     app.mount("/payment-slips", StaticFiles(directory="/app/payment_slips"), name="payment_slips")
 
 # --- CORS Middleware ---
+_frontend_url = os.environ.get("FRONTEND_PUBLIC_URL", "").rstrip("/")
+_allowed_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+if _frontend_url and _frontend_url not in _allowed_origins:
+    _allowed_origins.append(_frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

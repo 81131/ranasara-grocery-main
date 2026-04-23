@@ -81,7 +81,7 @@ class StockBatchEditHistory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     batch_id = Column(Integer, ForeignKey("stock_batches.id"), nullable=False)
-    edited_by = Column(Integer, nullable=False)
+    edited_by = Column(Integer, ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)  # admin who made the edit
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
     changes = Column(Text, nullable=False) 
 

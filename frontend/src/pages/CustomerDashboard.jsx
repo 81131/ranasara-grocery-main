@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, DollarSign, Package, ChevronRight, MessageSquare, ShoppingCart, LayoutDashboard, CheckCircle, Clock, Truck, AlertCircle, Edit2, X } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const STATUS_STYLES = {
   Delivered:  { bg: '#eefcf2', color: '#00a247', icon: CheckCircle },
@@ -11,6 +12,7 @@ const STATUS_STYLES = {
 
 function CustomerDashboard() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [stats, setStats] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -67,11 +69,12 @@ function CustomerDashboard() {
       if (res.ok) {
         setIsEditingProfile(false);
         fetchDashboardData();
+        addToast('Profile updated successfully!', 'success');
       } else {
-        alert('Failed to update profile');
+        addToast('Failed to update profile. Please try again.', 'error');
       }
     } catch {
-      alert('Error connecting to server');
+      addToast('Error connecting to server.', 'error');
     }
   };
 
@@ -90,11 +93,12 @@ function CustomerDashboard() {
       if (res.ok) {
         setIsEditingAddress(false);
         fetchDashboardData();
+        addToast('Delivery address updated!', 'success');
       } else {
-        alert('Failed to update address');
+        addToast('Failed to update address. Please try again.', 'error');
       }
     } catch {
-      alert('Error connecting to server');
+      addToast('Error connecting to server.', 'error');
     }
   };
 

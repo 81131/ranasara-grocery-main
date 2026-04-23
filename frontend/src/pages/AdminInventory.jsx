@@ -78,6 +78,26 @@ function AdminInventory() {
     } catch (error) { console.error(error); }
   };
 
+  // Derived: filtered + sorted product list used by the table
+  const filteredProducts = products
+    .filter(item => {
+      const q = searchQuery.toLowerCase();
+      const matchSearch = !searchQuery ||
+        item.product_name.toLowerCase().includes(q) ||
+        (item.sku || '').toLowerCase().includes(q);
+      const matchCat = categoryFilter === 'All' || item.category_name === categoryFilter;
+      return matchSearch && matchCat;
+    })
+    .sort((a, b) => {
+      let aVal, bVal;
+      if (sortField === 'name')   { aVal = a.product_name; bVal = b.product_name; }
+      else if (sortField === 'price')  { aVal = a.retail_price;       bVal = b.retail_price; }
+      else if (sortField === 'stock')  { aVal = a.current_quantity;   bVal = b.current_quantity; }
+      else if (sortField === 'profit') { aVal = a.retail_price - a.buying_price; bVal = b.retail_price - b.buying_price; }
+      if (typeof aVal === 'string') return sortOrder === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      return sortOrder === 'asc' ? (aVal - bVal) : (bVal - aVal);
+    });
+
   useEffect(() => { fetchData(); }, []);
 
   // --- Image and Utility handlers go here (identical to original code) ---
@@ -103,7 +123,9 @@ function AdminInventory() {
   const formatKeyword = (text) => {
     let cleaned = text.trim();
     if (!cleaned.startsWith('#')) cleaned = '#' + cleaned;
-    cleaned = cleaned.replace(/([a-z])([A-Z])/g, 'Rs. 1 $2');
+    // Remove the incorrect 'Rs. 1' injection and just ensure camelCase to PascalCase separation if desired
+    // Actually, keywords should usually be #SingleWord or #PascalCase without spaces
+    cleaned = cleaned.replace(/\s+/g, ''); // Remove all spaces
     return '#' + cleaned.charAt(1).toUpperCase() + cleaned.slice(2);
   };
 
@@ -248,8 +270,19 @@ function AdminInventory() {
   };
 
   const handleEditProduct = (product) => {
-    setProductData({ product_name: product.product_name, sku: product.sku, category_ids: [], supplier_id: product.supplier_id || '', unit_of_measure: product.unit_of_measure, keywords: product.keywords || '', description: '' });
-    setProductImagePreview(product.image_url); setEditingProductId(product.id); setShowProductForm(true); window.scrollTo(0,0);
+    setProductData({
+      product_name: product.product_name,
+      sku: product.sku || '',
+      category_ids: product.category_ids || [],  // restore existing categories
+      supplier_id: product.supplier_id || '',
+      unit_of_measure: product.unit_of_measure,
+      keywords: product.keywords || '',
+      description: product.description || '',    // restore existing description
+    });
+    setProductImagePreview(product.image_url);
+    setEditingProductId(product.id);
+    setShowProductForm(true);
+    window.scrollTo(0, 0);
   };
 
   const handleOpenBatchManager = async (product) => {

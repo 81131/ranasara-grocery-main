@@ -24,6 +24,7 @@ function AdminChatbot() {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(CHATBOT_STATS_MOCK);
+  const [showReadOnlyTip, setShowReadOnlyTip] = useState(false);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -90,11 +91,9 @@ function AdminChatbot() {
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const handleSend = async (text) => {
-    // Admin replying to a customer session not yet supported fully here without backend socket, 
-    // but we can mock sending a reply as the assistant temporarily or simply inform admins they are in read-only mode.
-    // Assuming admin is just viewing since it's an AI chatbot.
-    alert("Admins are currently in view-only mode for AI chat sessions.");
+  const handleSend = async () => {
+    setShowReadOnlyTip(true);
+    setTimeout(() => setShowReadOnlyTip(false), 3000);
   };
 
   const handleKeyDown = (e) => {
@@ -137,7 +136,17 @@ function AdminChatbot() {
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#f9fafb' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#f9fafb', position: 'relative' }}>
+            
+            {showReadOnlyTip && (
+              <div style={{
+                position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
+                backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', padding: '8px 16px',
+                borderRadius: '20px', fontSize: '12px', zIndex: 10, animation: 'fadeIn 0.3s ease'
+              }}>
+                Admins are in view-only mode for AI sessions.
+              </div>
+            )}
             {messages.length === 0 && !selectedSession ? (
               <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--text-light)' }}>
                 <BotMessageSquare size={48} style={{ margin: '0 auto 16px', opacity: 0.5 }} />
@@ -241,6 +250,9 @@ function AdminChatbot() {
 
         </div>
       </div>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+      `}</style>
     </div>
   );
 }

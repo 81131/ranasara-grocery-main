@@ -50,13 +50,18 @@ export default function PayHereCheckout({ orderId, token, onSuccess, onCancel, o
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
   };
 
-  // Poll /payment/status until order becomes Processing (= paid)
+  // Poll /payment/status until order becomes Processing (paid) or Cancelled (failed/abandoned)
   const startPolling = () => {
     stopPolling();
     let attempts = 0;
     pollRef.current = setInterval(async () => {
       attempts++;
-      if (attempts > 30) { stopPolling(); return; } // give up after ~60 s
+      if (attempts > 30) {
+        // Timed out after ~60s — PayHere webhook may be delayed or blocked
+        stopPolling();
+        setStatus('timeout');
+        return;
+      }
       try {
         const res = await fetch(`http://localhost:8000/payment/status/${orderId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +72,13 @@ export default function PayHereCheckout({ orderId, token, onSuccess, onCancel, o
           stopPolling();
           setStatus('success');
           onSuccess?.(data);
+        } else if (data.status === 'Cancelled') {
+          // PayHere webhook reported failure (-1/-2/-3)
+          stopPolling();
+          setStatus('cancelled');
+          onCancel?.();
         }
+        // Any other status (Pending) → keep polling
       } catch (_) { /* network blip — keep polling */ }
     }, 2000);
   };
@@ -93,8 +104,9 @@ export default function PayHereCheckout({ orderId, token, onSuccess, onCancel, o
 
       // 3. Attach PayHere event handlers
       window.payhere.onCompleted = () => {
-        setStatus('success');
-        startPolling();          // wait for webhook to flip order status
+        // onCompleted fires when the popup UI closes — NOT a payment confirmation.
+        // Do NOT trust this event alone. Start polling for the actual webhook result.
+        startPolling();
       };
       window.payhere.onDismissed = () => {
         setStatus('cancelled');
@@ -132,6 +144,25 @@ export default function PayHereCheckout({ orderId, token, onSuccess, onCancel, o
         <div>
           <div style={{ fontWeight: '700', fontSize: '14px', color: '#15803d' }}>Payment Successful!</div>
           <div style={{ fontSize: '12px', color: '#16a34a' }}>Your order is now being processed.</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'timeout') {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', gap: '10px',
+        padding: '14px 18px', borderRadius: '10px',
+        background: '#fffbeb', border: '1px solid #fde68a',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <AlertCircle size={20} color="#d97706" />
+          <div style={{ fontWeight: '700', fontSize: '14px', color: '#b45309' }}>Confirming Payment…</div>
+        </div>
+        <div style={{ fontSize: '13px', color: '#92400e' }}>
+          We haven't received a confirmation from PayHere yet. Your order is saved — check{' '}
+          <strong>My Orders</strong> in a few minutes. If payment was deducted, your order will update automatically.
         </div>
       </div>
     );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Plus, Minus, Search, Filter, Tag } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const cardStyle = {
   backgroundColor: 'white',
@@ -128,6 +129,7 @@ function ProductSkeleton() {
 
 function Home() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [quantities, setQuantities] = useState({});
   const [storeItems, setStoreItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -135,7 +137,6 @@ function Home() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [maxPriceLimit, setMaxPriceLimit] = useState(10000);
   const [currentPriceFilter, setCurrentPriceFilter] = useState(10000);
-  const [toast, setToast] = useState(null);
   const [visibleCount, setVisibleCount] = useState(40);
   const observer = useRef();
 
@@ -150,10 +151,8 @@ function Home() {
     if (node) observer.current.observe(node);
   }, [isLoading]);
 
-  const showToast = (msg, type = 'success') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const showToast = (msg, type = 'success') => addToast(msg, type);
+
 
   useEffect(() => {
     fetch('http://localhost:8000/inventory/storefront')
@@ -212,12 +211,6 @@ function Home() {
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', paddingTop: '30px' }}>
-      {/* Toast */}
-      {toast && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', backgroundColor: toast.type === 'error' ? '#ef4444' : 'var(--color-primary)', color: 'white', padding: '14px 20px', borderRadius: '10px', fontWeight: '500', zIndex: 9999, boxShadow: '0 4px 20px rgba(0,0,0,0.15)', fontSize: '14px', maxWidth: '320px' }}>
-          {toast.msg}
-        </div>
-      )}
 
       {/* SIDEBAR */}
       <aside style={{ width: '240px', flexShrink: 0, marginRight: '30px', backgroundColor: 'white', borderRadius: '12px', border: '1px solid var(--border-light)', padding: '24px', boxShadow: '0 2px 10px rgba(0,0,0,0.04)', position: 'sticky', top: '94px', height: 'fit-content' }}>

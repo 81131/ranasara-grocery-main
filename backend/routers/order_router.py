@@ -23,6 +23,7 @@ class DeliveryConfigUpdate(BaseModel):
     base_distance_km: float
     base_distance_fee: float
     extra_distance_fee_per_km: float
+    auto_assign_drivers: bool = False
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -79,7 +80,7 @@ def get_delivery_config(db: Session = Depends(get_db)):
     return config
 
 @router.put("/delivery-config")
-def update_delivery_config(config_update: DeliveryConfigUpdate, db: Session = Depends(get_db)):
+def update_delivery_config(config_update: DeliveryConfigUpdate, db: Session = Depends(get_db), _admin=Depends(require_admin)):
     config = db.query(DeliveryConfig).first()
     if not config:
         config = DeliveryConfig()
@@ -92,6 +93,7 @@ def update_delivery_config(config_update: DeliveryConfigUpdate, db: Session = De
     config.base_distance_km = config_update.base_distance_km
     config.base_distance_fee = config_update.base_distance_fee
     config.extra_distance_fee_per_km = config_update.extra_distance_fee_per_km
+    config.auto_assign_drivers = config_update.auto_assign_drivers
     db.commit()
     db.refresh(config)
     return config
@@ -106,12 +108,26 @@ def get_orders(
     sort_dir: Optional[str] = Query("desc", description="Sort direction: asc, desc"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
+    search: Optional[str] = Query(None, description="Search by order ID or customer name"),
 ):
     valid_filter = or_(Order.current_status != "Pending", Order.payment_method != "Card")
     q = db.query(Order).filter(valid_filter)
     
     if status and status != "All":
         q = q.filter(Order.current_status == status)
+
+    if search and search.strip():
+        # Build a subquery of order IDs matching the customer name
+        name_subq = db.query(OrderDelivery.order_id).filter(
+            OrderDelivery.customer_name.ilike(f"%{search.strip()}%")
+        ).subquery()
+        try:
+            oid = int(search.strip())
+            id_match = Order.id == oid
+        except ValueError:
+            id_match = False
+        q = q.filter(or_(id_match, Order.id.in_(name_subq)))
+
     total = q.count()
 
     # Apply Sorting
@@ -401,9 +417,11 @@ def get_reports(
         },
     }
 
-# ── Notifications ─────────────────────────────────────────────────────────────
-@router.get("/notifications")
-def get_notifications(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+# ── Notifications (status history, used by /notifications page) ───────────────
+# NOTE: The simpler GET /notifications/unread-count + GET /notifications above handle
+# the navbar badge. This endpoint serves the dedicated Notifications page with full history.
+@router.get("/notifications/history")
+def get_notifications_history(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     from models.orders import OrderStatusHistory, Order
     query = db.query(OrderStatusHistory)
     if current_user.role != "admin":
@@ -448,13 +466,21 @@ def _compute_shipping_fee(db: Session, delivery_type: str, distance_km: float, t
 
 @router.post("/calculate-fee")
 def calculate_fee(request: FeeRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    from models.cart import CartItem
+    from models.cart import Cart, CartItem
     from models.inventory import StockBatch
-    items = db.query(CartItem).filter(CartItem.user_id == current_user.user_id).all()
-    total_weight = sum(
-        (db.query(StockBatch).filter(StockBatch.id == item.batch_id).first().unit_weight_kg or 0.5) * item.quantity
-        for item in items
-    )
+    cart = db.query(Cart).filter(Cart.user_id == current_user.user_id).first()
+    total_weight = 0.0
+    if cart:
+        items = db.query(CartItem).filter(CartItem.cart_id == cart.id).all()
+        for item in items:
+            if item.batch_id:
+                batch = db.query(StockBatch).filter(StockBatch.id == item.batch_id).first()
+            else:
+                batch = db.query(StockBatch).filter(StockBatch.product_id == item.product_id, StockBatch.current_quantity > 0).first()
+            if batch:
+                total_weight += (batch.unit_weight_kg or 0.5) * item.quantity
+            else:
+                total_weight += 0.5 * item.quantity
     fee = _compute_shipping_fee(db, request.delivery_type, request.distance_km, total_weight)
     return {"fee": round(fee, 2), "total_weight": round(total_weight, 2)}
 
@@ -495,11 +521,15 @@ async def checkout(
     subtotal = 0.0
     total_weight = 0.0
     for ci in cart_items:
-        batch = (
-            db.query(StockBatch)
-            .filter(StockBatch.product_id == ci.product_id, StockBatch.current_quantity > 0)
-            .first()
-        ) or db.query(StockBatch).filter(StockBatch.product_id == ci.product_id).first()
+        # Use stored batch_id for price accuracy; fall back to product_id lookup
+        if ci.batch_id:
+            batch = db.query(StockBatch).filter(StockBatch.id == ci.batch_id).first()
+        else:
+            batch = (
+                db.query(StockBatch)
+                .filter(StockBatch.product_id == ci.product_id, StockBatch.current_quantity > 0)
+                .first()
+            ) or db.query(StockBatch).filter(StockBatch.product_id == ci.product_id).first()
         if batch:
             subtotal += float(batch.retail_price) * ci.quantity
             total_weight += (batch.unit_weight_kg or 0.5) * ci.quantity
@@ -555,7 +585,13 @@ async def checkout(
     db.add(delivery)
 
     for ci in cart_items:
-        batch = db.query(StockBatch).filter(StockBatch.product_id == ci.product_id, StockBatch.current_quantity > 0).first()
+        # Use stored batch_id for accuracy; fall back to product_id lookup
+        if ci.batch_id:
+            batch = db.query(StockBatch).filter(StockBatch.id == ci.batch_id).first()
+        else:
+            batch = db.query(StockBatch).filter(
+                StockBatch.product_id == ci.product_id, StockBatch.current_quantity > 0
+            ).first()
         if batch:
             oi = OrderItem(
                 order_id=order.id,
@@ -564,7 +600,11 @@ async def checkout(
                 price_at_purchase=float(batch.retail_price),
             )
             db.add(oi)
-            batch.current_quantity = max(0, batch.current_quantity - ci.quantity)
+            # Deduct stock immediately ONLY for Cash on Delivery (payment is guaranteed at door).
+            # Card (PayHere) and Payment Slip orders defer deduction to payment confirmation
+            # to prevent phantom stock loss from abandoned checkouts.
+            if payment_method == "Cash on Delivery":
+                batch.current_quantity = max(0, batch.current_quantity - ci.quantity)
 
     # Clear cart
     db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()
@@ -579,7 +619,7 @@ class DriverAssign(BaseModel):
     driver_id: int
 
 @router.get("/drivers/available")
-def get_available_drivers(db: Session = Depends(get_db)):
+def get_available_drivers(db: Session = Depends(get_db), _admin=Depends(require_admin)):
     from models.user import User, Driver
     drivers = db.query(User).join(Driver).filter(Driver.is_available == True).all()
     return [{"id": d.user_id, "name": f"{d.first_name} {d.last_name}".strip()} for d in drivers]
@@ -646,6 +686,11 @@ def review_payment_slip(order_id: int, body: SlipReview, db: Session = Depends(g
         order.payment_slip_status = "approved"
         if order.current_status == "Pending":
             order.current_status = "Processing"
+            # Deduct stock now that payment slip is confirmed
+            for oi in order.items:
+                batch = db.query(StockBatch).filter(StockBatch.id == oi.batch_id).first()
+                if batch:
+                    batch.current_quantity = max(0.0, float(batch.current_quantity) - float(oi.quantity))
             auto_assign_if_enabled(order_id, db)
     elif body.action == "reject":
         order.payment_slip_status = "rejected"

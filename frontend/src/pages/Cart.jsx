@@ -166,20 +166,73 @@ function Cart() {
     };
   }, []);  // only on mount — delivery type effect above handles toggling
 
-  const updateQuantity = async (batchId, newQty, availableQty) => {
-  if (newQty > availableQty) {
-    addToast('You cannot add more than available stock.', 'error');
-    return;
-  }
+  // Pre-populate checkout form from user profile to reduce friction
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('http://localhost:8000/users/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(profile => {
+        if (!profile) return;
+        setFirstName(prev => prev || profile.first_name || '');
+        setLastName(prev  => prev || profile.last_name  || '');
+        setEmail(prev     => prev || profile.email      || '');
+        setPhone(prev     => prev || profile.phone_number || '');
+        if (profile.address) {
+          const addr = [
+            profile.address.house_no_lane,
+            profile.address.street_name
+          ].filter(Boolean).join(', ');
+          setAddress(prev => prev || addr);
+          setCity(prev   => prev || profile.address.city        || 'Colombo');
+          setZip(prev    => prev || profile.address.postal_code || '00100');
+        }
+      })
+      .catch(() => {});
+  }, []);
 
-  const token = localStorage.getItem('token');
-  await fetch('http://localhost:8000/cart/update', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ batch_id: batchId, quantity: newQty }),
-  });
-  fetchCart();
-};
+  const updateQuantity = async (batchId, newQty, availableQty) => {
+    if (newQty > availableQty) {
+      addToast('You cannot add more than available stock.', 'error');
+      return;
+    }
+
+    // Snapshot for rollback on API failure
+    const prevData = cartData;
+
+    // Optimistic UI: update state immediately so the user sees instant feedback
+    setCartData(prev => {
+      const updatedItems = newQty <= 0
+        ? prev.items.filter(i => i.batch_id !== batchId)
+        : prev.items.map(i =>
+            i.batch_id === batchId
+              ? { ...i, quantity: newQty, subtotal: +(i.price * newQty).toFixed(2) }
+              : i
+          );
+      const newTotal = updatedItems.reduce((sum, i) => sum + i.subtotal, 0);
+      return { ...prev, items: updatedItems, total: +newTotal.toFixed(2) };
+    });
+
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:8000/cart/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ batch_id: batchId, quantity: newQty }),
+      });
+      if (!res.ok) {
+        // Rollback: restore previous state and show error
+        setCartData(prevData);
+        const err = await res.json().catch(() => ({}));
+        addToast(err.detail || 'Failed to update cart.', 'error');
+      }
+    } catch {
+      setCartData(prevData);
+      addToast('Network error updating cart.', 'error');
+    }
+  };
 
   // No tax — only shipping
   const grandTotal = +(cartData.total + shippingFee).toFixed(2);
@@ -209,9 +262,7 @@ function Cart() {
     return;
   }
 
-  if (deliveryType === 'Home Delivery' && (deliveryLat === null || deliveryLng === null)) {
-    // If map is blocked or failed, we just pass 0 for coordinates. The backend will handle it.
-  }
+  // Coordinates already validated above (lines 224–227) — if we reach here they are set.
 
   setIsPlacing(true);
   const token = localStorage.getItem('token');
@@ -319,6 +370,10 @@ function Cart() {
 >
   <Minus size={13} />
 </button>
+
+                    <span style={{ fontWeight: '700', fontSize: '15px', minWidth: '20px', textAlign: 'center', color: 'var(--text-main)' }}>
+                      {item.quantity}
+                    </span>
 
     <button
       type="button"
@@ -640,7 +695,7 @@ function Cart() {
               {recommendations.map((item, idx) => (
                 <div
                   key={idx}
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate(`/?search=${encodeURIComponent(item.product_name || '')}`)}
                   style={{
                     minWidth: '160px', maxWidth: '160px', flexShrink: 0,
                     borderRadius: '12px', border: '1px solid var(--border-light)',

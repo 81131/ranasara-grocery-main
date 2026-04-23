@@ -14,6 +14,7 @@ from sqlalchemy import func
 from routers.auth_router import get_current_user
 from pydantic import BaseModel
 from datetime import datetime, timezone
+from html import escape
 
 router = APIRouter(prefix="/feedback", tags=["feedback"])
 
@@ -55,6 +56,14 @@ def contains_offensive_text(text: str) -> bool:
 
     return any(word in lowered for word in OFFENSIVE_KEYWORDS)
 
+
+def sanitize_input(text: str) -> str:
+    """Sanitize user input to prevent XSS attacks."""
+    if not text:
+        return ""
+    # HTML escape the text to prevent XSS
+    return escape(text.strip())
+
 class FeedbackRequest(BaseModel):
     text: str
 
@@ -76,25 +85,17 @@ class FeedbackUpdate(BaseModel):
     rating: int    
 
 def get_purchased_products_for_user(db: Session, user_id: int):
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if not user:
-        return []
-
-    session_start = user.last_login
-
-    order_query = db.query(Order).filter(
-        Order.user_id == user_id,
-        Order.current_status != "Cancelled"
+    """Return products from all delivered/completed orders the user ever placed."""
+    orders = (
+        db.query(Order)
+        .filter(
+            Order.user_id == user_id,
+            Order.current_status.in_(["Delivered", "Completed"])
+        )
+        .all()
     )
 
-    # current login ekata passe create karapu orders witharai
-    if session_start:
-        order_query = order_query.filter(Order.created_at >= session_start)
-
-    orders = order_query.all()
-
     purchased_products = []
-
     for order in orders:
         for item in order.items:
             batch = db.query(StockBatch).filter(StockBatch.id == item.batch_id).first()
@@ -162,14 +163,15 @@ def submit_feedback(
         applies_to_all = False
         selected_products_label = ", ".join([purchased_map[pid] for pid in selected_product_ids])
 
-    is_offensive = contains_offensive_text(data.message)
+    # Sanitize message to prevent XSS attacks
+    sanitized_message = sanitize_input(data.message)
+    
+    is_offensive = contains_offensive_text(sanitized_message)
 
     fb = Feedback(
         user_id=current_user.user_id,
         user_name=f"{current_user.first_name or ''} {current_user.last_name or ''}".strip() or current_user.email,
-        product_name="All Products" if applies_to_all else selected_products_label,
-        product_id=None,
-        message=data.message.strip(),
+        message=sanitized_message,
         rating=data.rating,
         offensive=is_offensive,
         role="user",
@@ -329,8 +331,7 @@ def _fb_to_dict(fb: Feedback, is_admin: bool = False) -> dict:
         "id": fb.id,
         "user_name": fb.user_name,
         "user_id": fb.user_id,
-        "product_id": fb.product_id,
-        "product_name": fb.product_name,
+        "product_name": fb.selected_products_label or "All Products",
         "message": visible_message,
         "original_message": fb.message,
         "rating": fb.rating,

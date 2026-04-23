@@ -4,11 +4,12 @@ import { Package, Clock, CheckCircle, Truck, AlertCircle, ShoppingBag, Star } fr
 import { useToast } from '../context/ToastContext';
 
 const STATUS_STYLES = {
-  Delivered: { bg: '#eefcf2', color: '#00a247', icon: CheckCircle },
-  Processing: { bg: '#eff6ff', color: '#3b82f6', icon: Clock },
-  Shipped: { bg: '#faf5ff', color: '#a855f7', icon: Truck },
-  Pending: { bg: '#fffbeb', color: '#f59e0b', icon: AlertCircle },
-  Cancelled: { bg: '#fef2f2', color: '#ef4444', icon: AlertCircle },
+  Delivered:        { bg: '#eefcf2', color: '#00a247', icon: CheckCircle },
+  Processing:       { bg: '#eff6ff', color: '#3b82f6', icon: Clock },
+  'Out for Delivery': { bg: '#faf5ff', color: '#a855f7', icon: Truck },
+  Pending:          { bg: '#fffbeb', color: '#f59e0b', icon: AlertCircle },
+  Cancelled:        { bg: '#fef2f2', color: '#ef4444', icon: AlertCircle },
+  Shipped:          { bg: '#faf5ff', color: '#a855f7', icon: Truck },
 };
 
 function Orders() {

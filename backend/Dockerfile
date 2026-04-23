@@ -10,11 +10,13 @@ RUN apt-get update && apt-get install -y \
 
 # ── Layer 1: core API dependencies (fast, cached independently) ──────────────
 COPY requirements_base.txt .
-RUN pip install --no-cache-dir --timeout=120 -r requirements_base.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --timeout=120 -r requirements_base.txt
 
 # ── Layer 2: ML dependencies (large, separate layer for Docker cache) ─────────
 COPY requirements_ml.txt .
-RUN pip install --no-cache-dir --timeout=300 --retries=5 -r requirements_ml.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --timeout=300 --retries=5 -r requirements_ml.txt
 
 # Copy the rest of the backend source code
 COPY . .

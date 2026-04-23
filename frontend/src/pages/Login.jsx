@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, ShoppingBag } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
+import api from '../api';
 
 function Login({ setIsLoggedIn, setUserRole, setIsActive }) {
   const [email, setEmail] = useState('');
@@ -20,32 +21,24 @@ function Login({ setIsLoggedIn, setUserRole, setIsActive }) {
     formData.append('password', password);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${API_URL}/users/login`, {
-        method: 'POST',
+      const response = await api.post('/users/login', formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData,
       });
 
-      const data = await response.json();
+      const data = response.data;
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('isActive', String(data.is_active));
+      localStorage.setItem('user_id', String(data.user.id));
 
-      if (response.ok) {
-        localStorage.setItem('token', data.access_token);
-        localStorage.setItem('role', data.role);
-        localStorage.setItem('isActive', String(data.is_active));
-        localStorage.setItem('user_id', String(data.user.id));
+      setIsLoggedIn(true);
+      setUserRole(data.role);
+      setIsActive(data.is_active);
 
-        setIsLoggedIn(true);
-        setUserRole(data.role);
-        setIsActive(data.is_active);
-
-        if (data.role === 'admin') navigate('/admin');
-        else navigate('/');
-      } else {
-        setError(data.detail || 'Invalid email or password');
-      }
-    } catch {
-      setError('Connection error. Please check if the server is running.');
+      if (data.role === 'admin') navigate('/admin');
+      else navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -53,28 +46,22 @@ function Login({ setIsLoggedIn, setUserRole, setIsActive }) {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const res = await fetch(`${API_URL}/users/google-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: credentialResponse.credential }),
+      const response = await api.post('/users/google-login', {
+        credential: credentialResponse.credential,
       });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.setItem('token', data.access_token);
-        localStorage.setItem('role', data.role);
-        localStorage.setItem('isActive', String(data.is_active));
-        localStorage.setItem('user_id', String(data.user.id));
-        setIsLoggedIn(true);
-        setUserRole(data.role);
-        setIsActive(data.is_active);
-        if (data.role === 'admin') navigate('/admin');
-        else navigate('/');
-      } else {
-        setError(data.detail || 'Google Login failed');
-      }
-    } catch {
-      setError('Connection error. Please check if the server is running.');
+
+      const data = response.data;
+      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('role', data.role);
+      localStorage.setItem('isActive', String(data.is_active));
+      localStorage.setItem('user_id', String(data.user.id));
+      setIsLoggedIn(true);
+      setUserRole(data.role);
+      setIsActive(data.is_active);
+      if (data.role === 'admin') navigate('/admin');
+      else navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Google Login failed');
     }
   };
 
