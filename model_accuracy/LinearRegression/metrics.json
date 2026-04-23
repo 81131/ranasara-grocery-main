@@ -1,0 +1,8 @@
+{
+  "model": "LinearRegression",
+  "MAE": 4.5305,
+  "RMSE": 7.4318,
+  "MAPE%": 121.59,
+  "WAPE%": 40.61,
+  "R2": 0.6645
+}

@@ -1,0 +1,9 @@
+matplotlib
+seaborn
+xgboost
+lightgbm
+# Install CPU-only torch first so prophet does not pull in 300MB CUDA libraries
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+prophet
+statsmodels

@@ -1,0 +1,28 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic[email]
+python-dotenv
+# Replace the old package with this new one:
+google-genai
+passlib[bcrypt]
+bcrypt==4.0.1
+scikit-learn
+PyJWT
+python-multipart
+email-validator
+pandas
+python-jose[cryptography]
+google-auth
+requests
+# ML / Forecasting
+numpy
+matplotlib
+seaborn
+xgboost
+lightgbm
+prophet
+statsmodels
+joblib
+scipy

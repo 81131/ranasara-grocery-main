@@ -1,0 +1,247 @@
+grocery_fastapi_backend  | INFO:     Will watch for changes in these directories: ['/app']
+grocery_fastapi_backend  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+grocery_fastapi_backend  | INFO:     Started reloader process [1] using StatReload
+grocery_fastapi_backend  | INFO:     Started server process [8]
+grocery_fastapi_backend  | INFO:     Waiting for application startup.
+grocery_fastapi_backend  | INFO:     Application startup complete.
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   return self._jws.encode(
+grocery_fastapi_backend  | [INIT] Wiping and regenerating database from init.csv...
+grocery_fastapi_backend  | [INIT] Database successfully seeded from init.csv.
+grocery_fastapi_backend  | [SEED] Admin account created: admin@ranasara.com
+grocery_fastapi_backend  | INFO:     172.19.0.1:35704 - "POST /users/login HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35704 - "OPTIONS /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   decoded = self.decode_complete(
+grocery_fastapi_backend  | INFO:     172.19.0.1:35720 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35720 - "OPTIONS /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35730 - "OPTIONS /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35726 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35726 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35738 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:35738 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54050 - "OPTIONS /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54062 - "OPTIONS /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54070 - "OPTIONS /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54076 - "OPTIONS /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54092 - "GET /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54050 - "GET /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54070 - "GET /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:54076 - "GET /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53814 - "OPTIONS /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53818 - "OPTIONS /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53828 - "OPTIONS /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53838 - "OPTIONS /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53848 - "OPTIONS /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53864 - "OPTIONS /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53818 - "GET /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53864 - "GET /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53828 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53814 - "GET /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53848 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:53814 - "GET /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:55634 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:55634 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "OPTIONS /orders/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "OPTIONS /orders/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46796 - "GET /orders/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "GET /orders/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "OPTIONS /users/drivers HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46796 - "OPTIONS /users/drivers HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "GET /users/drivers HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "GET /users/drivers HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "OPTIONS /feedback/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46796 - "OPTIONS /feedback/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "OPTIONS /feedback/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44698 - "OPTIONS /feedback/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "GET /feedback/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "GET /feedback/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44698 - "GET /feedback/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "GET /feedback/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "OPTIONS /chat/admin/sessions HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44698 - "OPTIONS /chat/admin/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "OPTIONS /chat/admin/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   decoded = self.decode_complete(
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "GET /chat/admin/sessions HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "GET /chat/admin/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "GET /chat/admin/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "GET /chat/admin/sessions HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46780 - "OPTIONS /ml/insights HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46778 - "OPTIONS /ml/insights HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "GET /ml/insights HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   decoded = self.decode_complete(
+grocery_fastapi_backend  | INFO:     172.19.0.1:44700 - "GET /ml/insights HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44130 - "OPTIONS /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44144 - "OPTIONS /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44130 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44130 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44144 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44144 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44144 - "OPTIONS /orders/delivery-config HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44130 - "OPTIONS /orders/delivery-config HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/delivery-config HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/delivery-config HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/reports HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:44150 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   decoded = self.decode_complete(
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59744 - "GET /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59744 - "GET /users/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59748 - "GET /users/stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59748 - "GET /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59748 - "GET /inventory/categories HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /suppliers/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59744 - "GET /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59744 - "GET /inventory/products HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /orders/dashboard-stats HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59732 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43724 - "OPTIONS /users/register HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43726 - "POST /users/register HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   return self._jws.encode(
+grocery_fastapi_backend  | INFO:     172.19.0.1:59862 - "POST /users/login HTTP/1.1" 200 OK
+grocery_fastapi_backend  | /usr/local/lib/python3.11/site-packages/jwt/api_jwt.py:365: InsecureKeyLengthWarning: The HMAC key is 19 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+grocery_fastapi_backend  |   decoded = self.decode_complete(
+grocery_fastapi_backend  | INFO:     172.19.0.1:59862 - "GET /orders/notifications/unread-count HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59874 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:59874 - "GET /inventory/storefront HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43380 - "OPTIONS /cart/add HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43390 - "POST /cart/add HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43390 - "OPTIONS /cart/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43380 - "OPTIONS /cart/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43394 - "GET /cart/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:43394 - "GET /cart/ HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46220 - "OPTIONS /orders/checkout HTTP/1.1" 200 OK
+grocery_fastapi_backend  | INFO:     172.19.0.1:46234 - "POST /orders/checkout HTTP/1.1" 500 Internal Server Error
+grocery_fastapi_backend  | ERROR:    Exception in ASGI application
+grocery_fastapi_backend  | Traceback (most recent call last):
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+grocery_fastapi_backend  |     result = await app(  # type: ignore[func-returns-value]
+grocery_fastapi_backend  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+grocery_fastapi_backend  |     return await self.app(scope, receive, send)
+grocery_fastapi_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1159, in __call__
+grocery_fastapi_backend  |     await super().__call__(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 90, in __call__
+grocery_fastapi_backend  |     await self.middleware_stack(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+grocery_fastapi_backend  |     await self.app(scope, receive, _send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 96, in __call__
+grocery_fastapi_backend  |     await self.simple_response(scope, receive, send, request_headers=headers)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+grocery_fastapi_backend  |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+grocery_fastapi_backend  |     await app(scope, receive, sender)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 660, in __call__
+grocery_fastapi_backend  |     await self.middleware_stack(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 680, in app
+grocery_fastapi_backend  |     await route.handle(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 276, in handle
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in app
+grocery_fastapi_backend  |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+grocery_fastapi_backend  |     await app(scope, receive, sender)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 120, in app
+grocery_fastapi_backend  |     response = await f(request)
+grocery_fastapi_backend  |                ^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 674, in app
+grocery_fastapi_backend  |     raw_response = await run_endpoint_function(
+grocery_fastapi_backend  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+grocery_fastapi_backend  |     return await dependant.call(**values)
+grocery_fastapi_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/app/routers/order_router.py", line 319, in checkout
+grocery_fastapi_backend  |     subtotal = sum(
+grocery_fastapi_backend  |                ^^^^
+grocery_fastapi_backend  |   File "/app/routers/order_router.py", line 320, in <genexpr>
+grocery_fastapi_backend  |     (db.query(StockBatch).filter(StockBatch.id == ci.batch_id).first().retail_price or 0) * ci.quantity
+grocery_fastapi_backend  |                                                   ^^^^^^^^^^^
+grocery_fastapi_backend  | AttributeError: 'CartItem' object has no attribute 'batch_id'
+grocery_fastapi_backend  | INFO:     172.19.0.1:35796 - "POST /orders/checkout HTTP/1.1" 500 Internal Server Error
+grocery_fastapi_backend  | ERROR:    Exception in ASGI application
+grocery_fastapi_backend  | Traceback (most recent call last):
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/protocols/http/h11_impl.py", line 410, in run_asgi
+grocery_fastapi_backend  |     result = await app(  # type: ignore[func-returns-value]
+grocery_fastapi_backend  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+grocery_fastapi_backend  |     return await self.app(scope, receive, send)
+grocery_fastapi_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/applications.py", line 1159, in __call__
+grocery_fastapi_backend  |     await super().__call__(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/applications.py", line 90, in __call__
+grocery_fastapi_backend  |     await self.middleware_stack(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+grocery_fastapi_backend  |     await self.app(scope, receive, _send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 96, in __call__
+grocery_fastapi_backend  |     await self.simple_response(scope, receive, send, request_headers=headers)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 154, in simple_response
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 63, in __call__
+grocery_fastapi_backend  |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+grocery_fastapi_backend  |     await app(scope, receive, sender)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/middleware/asyncexitstack.py", line 18, in __call__
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 660, in __call__
+grocery_fastapi_backend  |     await self.middleware_stack(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 680, in app
+grocery_fastapi_backend  |     await route.handle(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 276, in handle
+grocery_fastapi_backend  |     await self.app(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 134, in app
+grocery_fastapi_backend  |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+grocery_fastapi_backend  |     raise exc
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+grocery_fastapi_backend  |     await app(scope, receive, sender)
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 120, in app
+grocery_fastapi_backend  |     response = await f(request)
+grocery_fastapi_backend  |                ^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 674, in app
+grocery_fastapi_backend  |     raw_response = await run_endpoint_function(
+grocery_fastapi_backend  |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 328, in run_endpoint_function
+grocery_fastapi_backend  |     return await dependant.call(**values)
+grocery_fastapi_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+grocery_fastapi_backend  |   File "/app/routers/order_router.py", line 319, in checkout
+grocery_fastapi_backend  |     subtotal = sum(
+grocery_fastapi_backend  |                ^^^^
+grocery_fastapi_backend  |   File "/app/routers/order_router.py", line 320, in <genexpr>
+grocery_fastapi_backend  |     (db.query(StockBatch).filter(StockBatch.id == ci.batch_id).first().retail_price or 0) * ci.quantity
+grocery_fastapi_backend  |                                                   ^^^^^^^^^^^
+grocery_fastapi_backend  | AttributeError: 'CartItem' object has no attribute 'batch_id'
+grocery_fastapi_backend  | INFO:     Shutting down
+grocery_fastapi_backend  | INFO:     Waiting for application shutdown.
+grocery_fastapi_backend  | INFO:     Application shutdown complete.
+grocery_fastapi_backend  | INFO:     Finished server process [8]
+grocery_fastapi_backend  | INFO:     Stopping reloader process [1]
